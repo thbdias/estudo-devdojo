@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.devdojo.error.CustomErrorType;
 import br.com.devdojo.model.Student;
 import br.com.devdojo.repository.StudentRepository;
 
@@ -33,6 +34,8 @@ public class StudentEndPoint {
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getStudentById(@PathVariable("id") Long id) {	
 		Optional<Student> student = studentDAO.findById(id);
+		if (student == null)
+			return new ResponseEntity<>(new CustomErrorType("Student not found"), HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(student.get(), HttpStatus.OK);
 	}
 	
