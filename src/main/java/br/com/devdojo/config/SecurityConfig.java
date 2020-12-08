@@ -23,11 +23,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
         	.authorizeRequests()
+        	.antMatchers("/*/protected/**").hasRole("USER") /** /v1/protected/students/list  -> get    */
+        	.antMatchers("/*/admin/**").hasRole("ADMIN")   /** /v1/admin/students/{id}       -> delete */
         	.anyRequest().authenticated()
             .and()
             .httpBasic()
-//      .antMatchers("/*/protected/**").hasRole("USER")
-//      .antMatchers("/*/admin/**").hasRole("ADMIN")   
             .and()
             .csrf().disable(); //problema de cors            
     }

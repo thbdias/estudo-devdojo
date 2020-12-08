@@ -27,20 +27,20 @@ import br.com.devdojo.model.Student;
 import br.com.devdojo.repository.StudentRepository;
 
 @RestController
-@RequestMapping("students")
+@RequestMapping("v1")
 public class StudentEndPoint {
 	
 	@Autowired
 	private StudentRepository studentDAO;
 	
 
-	@GetMapping("/list")
+	@GetMapping("protected/students/list")
 	public ResponseEntity<?> listAll(Pageable pageable) {
 		return new ResponseEntity<>(studentDAO.findAll(pageable), HttpStatus.OK);
 	}
 	
 	
-	@GetMapping("/{id}")
+	@GetMapping("protected/students/{id}")
 	public ResponseEntity<?> getStudentById(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetails userDetails) {	
 		System.out.println(userDetails);
 		verifyIfStudentExists(id);		
@@ -49,27 +49,26 @@ public class StudentEndPoint {
 	}
 	
 	
-	@GetMapping(path = "/findByName/{name}")
+	@GetMapping("protected/students/findByName/{name}")
     public ResponseEntity<?> findStudentsByName(@PathVariable String name){
         return new ResponseEntity<>(studentDAO.findByNameIgnoreCaseContaining(name), HttpStatus.OK);
     }	
 	
-	@PostMapping()
+	@PostMapping("admin/students")
 	@Transactional(rollbackFor = Exception.class)
 	public ResponseEntity<?> save(@Valid @RequestBody Student student) {		
 		return new ResponseEntity<>(studentDAO.save(student),HttpStatus.CREATED);
 	}
 
 	
-	@DeleteMapping("/{id}")
-	@PreAuthorize("hasRole('ADMIN')")
+	@DeleteMapping("/admin/students/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 		verifyIfStudentExists(id);
 		studentDAO.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
-	@PutMapping()
+	@PutMapping("/admin/students")
 	public ResponseEntity<?> update(@RequestBody Student student) {	
 		verifyIfStudentExists(student.getId());
 		studentDAO.save(student);
