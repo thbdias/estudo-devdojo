@@ -9,6 +9,6 @@ import java.util.List;
 /**
  * @author William Suane for DevDojo on 6/9/17.
  */
-public interface StudentRepository extends CrudRepository<Student, Long> {
+public interface StudentRepository extends PagingAndSortingRepository<Student, Long> {
     List<Student> findByNameIgnoreCaseContaining(String name);
 }
