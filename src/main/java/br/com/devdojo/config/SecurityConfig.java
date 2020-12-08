@@ -6,8 +6,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import br.com.devdojo.service.CustomUserDetailService;
 
 /**
  * @author William Suane for DevDojo on 6/27/17.
@@ -15,10 +16,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-//    @Autowired
-//    private CustomUserDetailService customUserDetailService;
+    @Autowired
+    private CustomUserDetailService customUserDetailService;
 
-        @Override
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
         	.authorizeRequests()
@@ -28,9 +29,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //      .antMatchers("/*/protected/**").hasRole("USER")
 //      .antMatchers("/*/admin/**").hasRole("ADMIN")   
             .and()
-            .csrf().disable(); //problema de cors
-            
+            .csrf().disable(); //problema de cors            
     }
+        
 //    @Override
 //    protected void configure(HttpSecurity http) throws Exception {
 //        http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
@@ -44,19 +45,47 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .addFilter(new JWTAuthorizationFilter(authenticationManager(), customUserDetailService));
 //    }
 
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.userDetailsService(customUserDetailService).passwordEncoder(new BCryptPasswordEncoder());
-//    }
-        
-    @Autowired
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-    	PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    	
-        auth.inMemoryAuthentication()
-                .withUser("abc").password(passwordEncoder.encode("devdojo")).roles("USER")
-                .and()
-                .withUser("admin").password(passwordEncoder.encode("devdojo")).roles("USER", "ADMIN");
-
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(customUserDetailService).passwordEncoder(new BCryptPasswordEncoder());
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * CONFIGURAÇÃO PARA USO DO AUTHENTICATION BASIC COM LOGIN/SENHA NO CÓDIGO
+     * */    
+//    @Autowired
+//    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+//    	PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+//    	
+//        auth.inMemoryAuthentication()
+//                .withUser("abc").password(passwordEncoder.encode("devdojo")).roles("USER")
+//                .and()
+//                .withUser("admin").password(passwordEncoder.encode("devdojo")).roles("USER", "ADMIN");
+//    }
+	
+	/**
+     * CONFIGURAÇÃO PARA USO DO AUTHENTICATION BASIC COM LOGIN/SENHA NO CÓDIGO
+     * */
+//  @Override
+//  protected void configure(HttpSecurity http) throws Exception {
+//      http
+//      	.authorizeRequests()
+//      	.anyRequest().authenticated()
+//          .and()
+//          .httpBasic()
+////    .antMatchers("/*/protected/**").hasRole("USER")
+////    .antMatchers("/*/admin/**").hasRole("ADMIN")   
+//          .and()
+//          .csrf().disable(); //problema de cors            
+//  }
 }
