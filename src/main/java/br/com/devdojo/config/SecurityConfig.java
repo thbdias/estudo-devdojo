@@ -1,6 +1,7 @@
 package br.com.devdojo.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,32 +20,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomUserDetailService customUserDetailService;
 
+    
+    /**
+     * CONFIGURAÇÃO PARA USO DO AUTHENTICATION JWT
+     * */   
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-        	.authorizeRequests()
-        	.antMatchers("/*/protected/**").hasRole("USER") /** /v1/protected/students/list  -> get    */
-        	.antMatchers("/*/admin/**").hasRole("ADMIN")   /** /v1/admin/students/{id}       -> delete */
-        	.anyRequest().authenticated()
+        	.cors()
+//    		.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
+            .and().csrf().disable()
+            .authorizeRequests()
+            .antMatchers(HttpMethod.GET, SecurityConstants.SIGN_UP_URL).permitAll()
+            .antMatchers("/*/protected/**").hasRole("USER")
+            .antMatchers("/*/admin/**").hasRole("ADMIN")
             .and()
-            .httpBasic()
-            .and()
-            .csrf().disable(); //problema de cors            
+            .addFilter(new JWTAuthenticationFilter(authenticationManager()))
+            .addFilter(new JWTAuthorizationFilter(authenticationManager(), customUserDetailService));
     }
-        
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//        http.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
-//                .and().csrf().disable()
-//                .authorizeRequests()
-//                .antMatchers(HttpMethod.GET, SIGN_UP_URL).permitAll()
-//                .antMatchers("/*/protected/**").hasRole("USER")
-//                .antMatchers("/*/admin/**").hasRole("ADMIN")
-//                .and()
-//                .addFilter(new JWTAuthenticationFilter(authenticationManager()))
-//                .addFilter(new JWTAuthorizationFilter(authenticationManager(), customUserDetailService));
-//    }
-
+    
+    
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(customUserDetailService).passwordEncoder(new BCryptPasswordEncoder());
@@ -60,8 +55,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     
     
     
+    
+    
+    
+    
     /**
-     * CONFIGURAÇÃO PARA USO DO AUTHENTICATION BASIC COM LOGIN/SENHA NO CÓDIGO
+     * CONFIGURAÇÃO PARA USO DO AUTHENTICATION BASIC COM LOGIN/SENHA NO CÓDIGO OK
+     * */   
+//    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//        http
+//        	.authorizeRequests()
+//        	.antMatchers("/*/protected/**").hasRole("USER") /** /v1/protected/students/list  -> get    */
+//        	.antMatchers("/*/admin/**").hasRole("ADMIN")   /** /v1/admin/students/{id}       -> delete */
+//        	.anyRequest().authenticated()
+//            .and()
+//            .httpBasic()
+//            .and()
+//            .csrf().disable(); //problema de cors            
+//    }
+    
+    
+    /**
+     * CONFIGURAÇÃO PARA USO DO AUTHENTICATION BASIC COM LOGIN/SENHA NO CÓDIGO OK
      * */    
 //    @Autowired
 //    public void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -74,7 +90,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //    }
 	
 	/**
-     * CONFIGURAÇÃO PARA USO DO AUTHENTICATION BASIC COM LOGIN/SENHA NO CÓDIGO
+     * CONFIGURAÇÃO PARA USO DO AUTHENTICATION BASIC COM LOGIN/SENHA NO CÓDIGO OK
      * */
 //  @Override
 //  protected void configure(HttpSecurity http) throws Exception {
