@@ -70,11 +70,11 @@ public class StudentEndpointTest {
 
 	
 	@Test
-	public void listStudentsWhenUsernameAndPasswordAreIncorrectShouldReturnStatusCode401() {
+	public void listStudentsWhenUsernameAndPasswordAreIncorrectShouldReturnStatusCode403() {
 		System.out.println(port);
 		restTemplate = restTemplate.withBasicAuth("1", "1");
-		ResponseEntity<String> response = restTemplate.getForEntity("/v1/protected/students/", String.class);
-		Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(401);
+		ResponseEntity<String> response = restTemplate.getForEntity("/v1/protected/students/list", String.class);
+		Assertions.assertThat(response.getStatusCodeValue()).isEqualTo(403);
 	}
 	
 
